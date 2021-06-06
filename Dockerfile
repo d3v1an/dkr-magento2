@@ -2,15 +2,17 @@ FROM d3catalyst/dkr-apache2-php7:latest
 
 LABEL maintainer="d3v1an.tux@gmail.com"
 LABEL php_version="7.3.12"
-LABEL magento_version="2.3.6"
-LABEL description="Magento 2.3.6 with PHP 7.3.12"
+LABEL magento_version="2.3.5"
+LABEL description="Magento 2.3.5 with PHP 7.3.12"
 
-ENV MAGENTO_VERSION 2.3.6
+ENV MAGENTO_VERSION 2.3.5
 ENV INSTALL_DIR /var/www/html
 ENV COMPOSER_HOME /var/www/.composer/
 
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
+RUN /usr/local/bin/composer self-update 1.10.16
+
 COPY ./auth.json $COMPOSER_HOME
 
 RUN requirements="libpng++-dev libzip-dev libmcrypt-dev libmcrypt4 libcurl3-dev libfreetype6 libjpeg-turbo8 libjpeg-turbo8-dev libfreetype6-dev libicu-dev libxslt1-dev unzip" \
@@ -33,7 +35,7 @@ RUN yes '' | pecl install mcrypt-1.0.3 \
 RUN chsh -s /bin/bash www-data
 
 RUN chown -R www-data:www-data /var/www
-RUN su www-data -c "composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition $INSTALL_DIR $MAGENTO_VERSION"
+RUN su www-data -c "php -d memory_limit=-1 /usr/local/bin/composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition $INSTALL_DIR $MAGENTO_VERSION"
 
 RUN cd $INSTALL_DIR \
     && find . -type d -exec chmod 770 {} \; \
@@ -47,7 +49,7 @@ COPY ./install-sampledata /usr/local/bin/install-sampledata
 RUN chmod +x /usr/local/bin/install-sampledata
 
 RUN a2enmod rewrite
-RUN echo "memory_limit=2048M" > /usr/local/etc/php/conf.d/memory-limit.ini
+RUN echo "memory_limit=-1" > /usr/local/etc/php/conf.d/memory-limit.ini
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
