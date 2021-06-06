@@ -2,10 +2,10 @@ FROM d3catalyst/dkr-apache2-php7:latest
 
 LABEL maintainer="d3v1an.tux@gmail.com"
 LABEL php_version="7.3.12"
-LABEL magento_version="2.3.7"
-LABEL description="Magento 2.3.7 with PHP 7.3.12"
+LABEL magento_version="2.3.6"
+LABEL description="Magento 2.3.6 with PHP 7.3.12"
 
-ENV MAGENTO_VERSION 2.3.7
+ENV MAGENTO_VERSION 2.3.6
 ENV INSTALL_DIR /var/www/html
 ENV COMPOSER_HOME /var/www/.composer/
 
@@ -43,8 +43,8 @@ RUN cd $INSTALL_DIR \
 COPY ./install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
 
-# COPY ./install-sampledata /usr/local/bin/install-sampledata
-# RUN chmod +x /usr/local/bin/install-sampledata
+COPY ./install-sampledata /usr/local/bin/install-sampledata
+RUN chmod +x /usr/local/bin/install-sampledata
 
 RUN a2enmod rewrite
 RUN echo "memory_limit=2048M" > /usr/local/etc/php/conf.d/memory-limit.ini
